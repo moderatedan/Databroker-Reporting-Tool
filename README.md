@@ -32,3 +32,14 @@ By reporting these data broker sites, you help reduce the exposure of personal d
 License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
+
+## Report Tool In Action
+
+If the video doesn't play directly here, you can click on the link below to view it:
+
+[Report Tool In Action](https://github.com/moderatedan/Databroker-Reporting-Tool/blob/main/Report_Tool_In_Action.mp4)
+
+<video width="600" controls>
+  <source src="https://github.com/moderatedan/Databroker-Reporting-Tool/raw/main/Report_Tool_In_Action.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
