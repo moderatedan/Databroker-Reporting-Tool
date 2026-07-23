@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Lingo Bridge — a living glossary and translator for American and UK street slang, with origins credited. Community-editable.">
+<title>Lingo Bridge — slang, translated & credited</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #fbfaf7;
+    --card: #ffffff;
+    --ink: #191c24;
+    --dim: #6a7080;
+    --line: #e3e1da;
+    --cobalt: #2447f5;       /* primary — headwords, actions */
+    --cobalt-soft: #e9edfe;
+    --coral: #ff5d47;        /* secondary — highlights, mic */
+    --coral-soft: #ffe9e5;
+    --radius: 14px;
+    --shadow: 0 10px 30px rgba(25, 28, 36, .07);
+  }
+  html[data-theme="dark"] {
+    --paper: #14161c;
+    --card: #1c1f27;
+    --ink: #eceef2;
+    --dim: #9aa1b0;
+    --line: #2c303b;
+    --cobalt: #7b93ff;
+    --cobalt-soft: #232b4a;
+    --coral: #ff7a66;
+    --coral-soft: #3c231f;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    background: var(--paper); color: var(--ink);
+    min-height: 100vh; transition: background .25s, color .25s;
+  }
+  .serif { font-family: "Source Serif 4", Georgia, serif; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px clamp(16px, 4vw, 44px); border-bottom: 1px solid var(--line);
+  }
+  .wordmark { display: flex; align-items: baseline; gap: 10px; }
+  .wordmark h1 {
+    font-family: "Archivo Black", "Inter", sans-serif;
+    font-size: 1.25rem; letter-spacing: -.01em;
+  }
+  .wordmark h1 em { font-style: normal; color: var(--cobalt); }
+  .wordmark .tag { font-size: .72rem; color: var(--dim); }
+  #themeToggle {
+    background: var(--card); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 99px; width: 40px; height: 40px; cursor: pointer;
+    font-size: 1rem;
+  }
+  #themeToggle:hover { border-color: var(--cobalt); }
+
+  main { max-width: 880px; margin: 0 auto; padding: 26px clamp(16px, 4vw, 44px) 90px; }
+
+  .tabs { display: flex; gap: 4px; border: 1px solid var(--line);
+    border-radius: 99px; padding: 4px; width: fit-content; background: var(--card);
+    margin-bottom: 26px; }
+  .tabs button {
+    font: 500 .88rem "Inter", sans-serif; background: none; border: none;
+    color: var(--dim); padding: 9px 20px; border-radius: 99px; cursor: pointer;
+  }
+  .tabs button[aria-selected="true"] { background: var(--cobalt); color: #fff; font-weight: 700; }
+  .tabs button:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 2px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow);
+    margin-bottom: 18px;
+  }
+  h2 { font-size: 1rem; margin-bottom: 4px; }
+  .sub { font-size: .82rem; color: var(--dim); margin-bottom: 16px; }
+
+  textarea, input[type="search"] {
+    width: 100%; font: 400 1rem/1.6 "Source Serif 4", Georgia, serif;
+    background: var(--paper); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 10px; padding: 14px;
+  }
+  textarea { min-height: 110px; resize: vertical; }
+  textarea:focus, input:focus { outline: none; border-color: var(--cobalt); }
+
+  .btn {
+    font: 700 .88rem "Inter", sans-serif; border: none; border-radius: 9px;
+    padding: 11px 18px; cursor: pointer; transition: transform .1s, opacity .15s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 2px; }
+  .btn-primary { background: var(--cobalt); color: #fff; }
+  .btn-primary:hover { opacity: .9; }
+  .btn-ghost { background: none; color: var(--ink); border: 1px solid var(--line); font-weight: 500; }
+  .btn-ghost:hover { border-color: var(--cobalt); }
+  .btn-mic { background: var(--coral); color: #fff; }
+  .btn-mic.listening { animation: pulse 1.2s infinite; }
+  @keyframes pulse { 50% { opacity: .55; } }
+  @media (prefers-reduced-motion: reduce) { .btn-mic.listening { animation: none; } }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+
+  /* translation output */
+  .out { display: none; }
+  .out.show { display: block; }
+  .annotated { font-family: "Source Serif 4", Georgia, serif; font-size: 1.08rem;
+    line-height: 1.9; }
+  .hit {
+    background: linear-gradient(transparent 62%, var(--coral-soft) 62%);
+    border-bottom: 2px solid var(--coral); cursor: pointer; border-radius: 2px;
+    padding: 0 1px;
+  }
+  .hit:hover, .hit:focus-visible { background: var(--coral-soft); outline: none; }
+  .plain { font-family: "Source Serif 4", Georgia, serif; font-size: 1.02rem;
+    line-height: 1.8; color: var(--ink); background: var(--cobalt-soft);
+    border-radius: 10px; padding: 14px 16px; margin-top: 8px; }
+  .count-note { font-size: .78rem; color: var(--dim); margin-top: 10px; }
+
+  /* entry card (the signature element) */
+  .entry {
+    border: 1px solid var(--line); border-left: 4px solid var(--cobalt);
+    border-radius: 10px; padding: 16px 18px; margin-bottom: 12px;
+    background: var(--card);
+  }
+  .entry .head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .entry .word {
+    font-family: "Archivo Black", "Inter", sans-serif; font-size: 1.25rem;
+    letter-spacing: -.01em;
+  }
+  .entry .pos { font-family: "Source Serif 4", Georgia, serif; font-style: italic;
+    color: var(--dim); font-size: .9rem; }
+  .entry .speak { margin-left: auto; background: none; border: 1px solid var(--line);
+    border-radius: 99px; width: 32px; height: 32px; cursor: pointer;
+    color: var(--ink); font-size: .85rem; }
+  .entry .speak:hover { border-color: var(--cobalt); }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+  .chip {
+    font-size: .68rem; font-weight: 700; letter-spacing: .04em;
+    color: var(--cobalt); background: var(--cobalt-soft);
+    border-radius: 99px; padding: 3px 10px; text-transform: uppercase;
+  }
+  .chip.origin { color: var(--coral); background: var(--coral-soft); }
+  .entry .def { font-family: "Source Serif 4", Georgia, serif; line-height: 1.65;
+    margin: 6px 0; }
+  .entry .ex { font-family: "Source Serif 4", Georgia, serif; font-style: italic;
+    color: var(--dim); font-size: .92rem; }
+  .entry .variants { font-size: .75rem; color: var(--dim); margin-top: 6px; }
+
+  /* glossary */
+  .filter-chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 18px; }
+  .filter-chips button {
+    font: 600 .74rem "Inter", sans-serif; border: 1px solid var(--line);
+    background: none; color: var(--dim); border-radius: 99px; padding: 6px 14px;
+    cursor: pointer; text-transform: uppercase; letter-spacing: .04em;
+  }
+  .filter-chips button.on { border-color: var(--cobalt); color: var(--cobalt);
+    background: var(--cobalt-soft); }
+
+  /* modal */
+  dialog {
+    border: none; border-radius: var(--radius); padding: 0;
+    max-width: 460px; width: calc(100% - 32px);
+    background: var(--card); color: var(--ink); box-shadow: var(--shadow);
+  }
+  dialog::backdrop { background: rgba(15, 17, 22, .45); }
+  dialog .entry { border: none; border-left: 4px solid var(--cobalt); margin: 0; }
+  dialog .close-row { text-align: right; padding: 0 14px 14px; }
+
+  /* history */
+  .hist-item {
+    border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+    margin-bottom: 10px; cursor: pointer; background: var(--card);
+  }
+  .hist-item:hover { border-color: var(--cobalt); }
+  .hist-item .when { font-size: .7rem; color: var(--dim); margin-bottom: 4px; }
+  .hist-item .txt { font-family: "Source Serif 4", Georgia, serif; font-size: .95rem; }
+  .empty { color: var(--dim); font-size: .88rem; text-align: center; padding: 30px 10px; }
+
+  #toast {
+    position: fixed; bottom: 26px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--paper); font-weight: 600; font-size: .85rem;
+    padding: 11px 22px; border-radius: 99px; opacity: 0; pointer-events: none;
+    transition: opacity .2s, transform .2s; z-index: 60;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  footer { text-align: center; font-size: .74rem; color: var(--dim);
+    padding: 24px 16px 44px; line-height: 1.8; }
+  footer a { color: var(--dim); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wordmark">
+    <h1>Lingo<em>Bridge</em></h1>
+    <span class="tag">slang, translated &amp; credited</span>
+  </div>
+  <button id="themeToggle" aria-label="Toggle dark or light theme">◐</button>
+</header>
+
+<main>
+  <div class="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" aria-selected="true" data-panel="translate">Translate</button>
+    <button role="tab" aria-selected="false" data-panel="glossary">Glossary</button>
+    <button role="tab" aria-selected="false" data-panel="history">History</button>
+  </div>
+
+  <!-- ============ TRANSLATE ============ -->
+  <section class="panel active" id="panel-translate">
+    <div class="card">
+      <h2>Paste or speak some slang</h2>
+      <p class="sub">Matched terms get highlighted — tap any highlight for the full
+      dictionary entry, origin included.</p>
+      <textarea id="input" spellcheck="false"
+        placeholder="e.g. No cap, that new spot downtown is bussin — we finna pull up Friday, say less."></textarea>
+      <div class="row">
+        <button class="btn btn-primary" id="translateBtn">Translate</button>
+        <button class="btn btn-mic" id="micBtn" title="Speak instead of typing">🎙 Speak</button>
+        <button class="btn btn-ghost" id="clearBtn">Clear</button>
+      </div>
+    </div>
+
+    <div class="card out" id="output">
+      <h2>Annotated</h2>
+      <p class="sub">Tap a highlighted term to see its entry.</p>
+      <div class="annotated" id="annotated"></div>
+      <h2 style="margin-top:20px">Plain English</h2>
+      <div class="plain serif" id="plain"></div>
+      <div class="count-note" id="countNote"></div>
+      <div class="row">
+        <button class="btn btn-ghost" id="speakBtn">🔊 Read translation</button>
+        <button class="btn btn-ghost" id="copyBtn">Copy translation</button>
+        <button class="btn btn-ghost" id="shareBtn">Share</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section class="panel" id="panel-glossary">
+    <div class="card">
+      <h2>Word of the day</h2>
+      <div id="wotd"></div>
+    </div>
+    <div class="card">
+      <h2>Browse the glossary <span id="glossCount" style="font-weight:400;color:var(--dim)"></span></h2>
+      <p class="sub">Search terms, meanings, or origins. This dictionary lives in
+      <code>dictionary.js</code> — corrections and additions welcome via pull request.</p>
+      <input type="search" id="glossSearch" placeholder="Search: term, meaning, or origin…">
+      <div class="filter-chips" id="filterChips"></div>
+      <div id="glossList"></div>
+    </div>
+    <div class="card">
+      <h2>A note on respect</h2>
+      <p class="sub" style="margin-bottom:0">
+        Most of the vocabulary here originates in African-American Vernacular
+        English (AAVE), and in specific scenes and cities — hip-hop, ballroom
+        culture, London's Multicultural English, Jamaican Patois. This project
+        documents and credits that language; it doesn't costume it. Definitions
+        are written the way a good dictionary writes them, origins are named on
+        every entry, and contributions that mock rather than explain are
+        declined.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ HISTORY ============ -->
+  <section class="panel" id="panel-history">
+    <div class="card">
+      <h2>Session history</h2>
+      <p class="sub">Translations from this tab. By design nothing is stored after
+      you close it — use Download to keep a copy.</p>
+      <div id="histList"><div class="empty">No translations yet.</div></div>
+      <div class="row">
+        <button class="btn btn-ghost" id="downloadHist">Download as .txt</button>
+        <button class="btn btn-ghost" id="clearHist">Clear history</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dialog id="entryModal">
+  <div id="modalEntry"></div>
+  <div class="close-row">
+    <button class="btn btn-ghost" onclick="document.getElementById('entryModal').close()">Close</button>
+  </div>
+</dialog>
+
+<footer>
+  Lingo Bridge · MIT License · dictionary is community-editable —
+  <a href="https://github.com/moderatedan/hood-lingo-translator">contribute on GitHub</a><br>
+  Origins credited on every entry. Living language moves fast; spot an error? Open a PR.
+</footer>
+
+<div id="toast" role="status"></div>
+
+<script src="dictionary.js"></script>
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+
+  /* ---------------- matcher ---------------- */
+  // Map every matchable form (term + variants) to its entry, longest first.
+  const FORMS = [];
+  DICTIONARY.forEach((entry) => {
+    [entry.term, ...entry.variants].forEach((form) => {
+      FORMS.push({ form: form.toLowerCase(), words: form.split(/\s+/).length, entry });
+    });
+  });
+  const MAX_WORDS = Math.max(...FORMS.map((f) => f.words));
+  const FORM_MAP = new Map(FORMS.map((f) => [f.form, f.entry]));
+
+  const clean = (w) => w.toLowerCase().replace(/^[^a-z0-9'’#@]+|[^a-z0-9'’]+$/g, "");
+
+  // Tokenize preserving whitespace/punctuation; greedily match longest n-grams.
+  function analyze(text) {
+    const rawTokens = text.split(/(\s+)/); // words and whitespace interleaved
+    const out = [];
+    let i = 0;
+    while (i < rawTokens.length) {
+      const tok = rawTokens[i];
+      if (/^\s+$/.test(tok) || tok === "") { out.push({ text: tok }); i++; continue; }
+      let matched = null, span = 0;
+      for (let n = MAX_WORDS; n >= 1; n--) {
+        // gather n word-tokens (skipping the whitespace tokens between them)
+        const parts = [];
+        let j = i, count = 0;
+        while (j < rawTokens.length && count < n) {
+          if (!/^\s+$/.test(rawTokens[j]) && rawTokens[j] !== "") count++;
+          parts.push(rawTokens[j]); j++;
+        }
+        if (count < n) continue;
+        const key = parts.filter((p) => !/^\s+$/.test(p)).map(clean).join(" ");
+        if (key && FORM_MAP.has(key)) {
+          matched = FORM_MAP.get(key); span = parts.length; break;
+        }
+      }
+      if (matched) {
+        out.push({ text: rawTokens.slice(i, i + span).join(""), entry: matched });
+        i += span;
+      } else {
+        out.push({ text: tok }); i++;
+      }
+    }
+    return out;
+  }
+
+  // Replace a matched surface form with its gloss, keeping leading/trailing
+  // punctuation and initial capitalization. Glosses can list alternatives
+  // ("come over / show up") — substitution uses the first for readability.
+  function glossify(surface, gloss) {
+    const m = surface.match(/^([^A-Za-z0-9'’]*)(.*?)([^A-Za-z0-9'’]*)$/s);
+    const [, pre, core, post] = m;
+    let g = gloss.split(" / ")[0].replace(/\s*\([^)]*\)\s*/g, " ").trim();
+    if (/^[A-Z]/.test(core.trim())) g = g.charAt(0).toUpperCase() + g.slice(1);
+    return pre + g + post;
+  }
+
+  /* ---------------- helpers ---------------- */
+  function toast(msg) {
+    const t = $("toast");
+    t.textContent = msg; t.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => t.classList.remove("show"), 2200);
+  }
+  async function copyText(text, msg) {
+    try { await navigator.clipboard.writeText(text); toast(msg); }
+    catch {
+      const ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); ta.remove(); toast(msg);
+    }
+  }
+  const esc = (s) => s.replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  function speak(text) {
+    if (!("speechSynthesis" in window)) return toast("Speech isn't supported in this browser");
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.98;
+    speechSynthesis.speak(u);
+  }
+
+  function entryHTML(e) {
+    return `
+      <div class="entry">
+        <div class="head">
+          <span class="word">${esc(e.term)}</span>
+          <span class="pos">${esc(e.pos)}</span>
+          <button class="speak" title="Hear it used"
+            onclick="window.__speakExample(${JSON.stringify(e.term)})">🔊</button>
+        </div>
+        <div class="chips">
+          <span class="chip origin">${esc(e.origin)}</span>
+          ${e.tags.map((t) => `<span class="chip">${esc(t)}</span>`).join("")}
+        </div>
+        <div class="def">${esc(e.def)}</div>
+        <div class="ex">“${esc(e.example)}”</div>
+        ${e.variants.length ? `<div class="variants">Also: ${e.variants.map(esc).join(", ")}</div>` : ""}
+      </div>`;
+  }
+  const byTerm = new Map(DICTIONARY.map((e) => [e.term, e]));
+  window.__speakExample = (term) => {
+    const e = byTerm.get(term);
+    if (e) speak(`${e.term}. ${e.def} For example: ${e.example}`);
+  };
+
+  function showEntry(term) {
+    const e = byTerm.get(term);
+    if (!e) return;
+    $("modalEntry").innerHTML = entryHTML(e);
+    $("entryModal").showModal();
+  }
+  window.__showEntry = showEntry;
+
+  /* ---------------- tabs & theme ---------------- */
+  document.querySelectorAll(".tabs button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tabs button").forEach((b) =>
+        b.setAttribute("aria-selected", b === btn ? "true" : "false"));
+      document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+      $("panel-" + btn.dataset.panel).classList.add("active");
+    });
+  });
+  const root = document.documentElement;
+  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)
+    root.dataset.theme = "dark";
+  $("themeToggle").addEventListener("click", () => {
+    root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+  });
+
+  /* ---------------- translate flow ---------------- */
+  const history = [];
+  let lastPlain = "";
+
+  function translate() {
+    const text = $("input").value.trim();
+    if (!text) return toast("Type or speak something first");
+    const tokens = analyze(text);
+    const hits = tokens.filter((t) => t.entry);
+
+    $("annotated").innerHTML = tokens.map((t) =>
+      t.entry
+        ? `<span class="hit" tabindex="0" role="button"
+             aria-label="Definition of ${esc(t.entry.term)}"
+             onclick="window.__showEntry(${JSON.stringify(t.entry.term)})"
+             onkeydown="if(event.key==='Enter')window.__showEntry(${JSON.stringify(t.entry.term)})"
+           >${esc(t.text)}</span>`
+        : esc(t.text)
+    ).join("");
+
+    lastPlain = tokens.map((t) =>
+      t.entry ? glossify(t.text, t.entry.gloss) : t.text).join("");
+    $("plain").textContent = lastPlain;
+
+    const unique = new Set(hits.map((h) => h.entry.term)).size;
+    $("countNote").textContent = hits.length
+      ? `${hits.length} match${hits.length > 1 ? "es" : ""} · ${unique} unique term${unique > 1 ? "s" : ""}. Ordinary words like “bet” or “safe” can double as slang — a highlight is a suggestion, not a verdict.`
+      : "No dictionary matches — either it's already plain English, or we're missing a term (PRs welcome!).";
+    $("output").classList.add("show");
+
+    history.unshift({ when: new Date().toLocaleTimeString(), input: text, plain: lastPlain });
+    renderHistory();
+  }
+
+  $("translateBtn").addEventListener("click", translate);
+  $("input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) translate();
+  });
+  $("clearBtn").addEventListener("click", () => {
+    $("input").value = ""; $("output").classList.remove("show"); $("input").focus();
+  });
+  $("speakBtn").addEventListener("click", () => speak(lastPlain));
+  $("copyBtn").addEventListener("click", () => copyText(lastPlain, "Translation copied"));
+  $("shareBtn").addEventListener("click", async () => {
+    const url = new URL(location.href.split("?")[0]);
+    url.searchParams.set("q", $("input").value.trim());
+    const payload = { title: "Lingo Bridge", text: lastPlain, url: url.toString() };
+    if (navigator.share) {
+      try { await navigator.share(payload); } catch { /* user cancelled */ }
+    } else {
+      copyText(url.toString(), "Share link copied");
+    }
+  });
+
+  /* ---------------- speech input ---------------- */
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recog = null;
+  $("micBtn").addEventListener("click", () => {
+    if (!SR) return toast("Voice input isn't supported in this browser — try Chrome or Edge");
+    if (recog) { recog.stop(); return; }
+    recog = new SR();
+    recog.lang = "en-US";
+    recog.interimResults = false;
+    $("micBtn").classList.add("listening");
+    $("micBtn").textContent = "🎙 Listening…";
+    recog.onresult = (e) => {
+      const said = Array.from(e.results).map((r) => r[0].transcript).join(" ");
+      $("input").value = ($("input").value + " " + said).trim();
+    };
+    recog.onend = () => {
+      $("micBtn").classList.remove("listening");
+      $("micBtn").textContent = "🎙 Speak";
+      recog = null;
+      if ($("input").value.trim()) translate();
+    };
+    recog.onerror = () => toast("Couldn't hear that — check mic permissions");
+    recog.start();
+  });
+
+  /* ---------------- history ---------------- */
+  function renderHistory() {
+    const list = $("histList");
+    if (!history.length) {
+      list.innerHTML = '<div class="empty">No translations yet.</div>'; return;
+    }
+    list.innerHTML = "";
+    history.forEach((h) => {
+      const div = document.createElement("div");
+      div.className = "hist-item";
+      div.innerHTML = `<div class="when">${esc(h.when)}</div>
+        <div class="txt"><b>In:</b> ${esc(h.input)}</div>
+        <div class="txt" style="color:var(--dim)"><b>Out:</b> ${esc(h.plain)}</div>`;
+      div.addEventListener("click", () => {
+        $("input").value = h.input;
+        document.querySelector('[data-panel="translate"]').click();
+        translate();
+      });
+      list.appendChild(div);
+    });
+  }
+  $("clearHist").addEventListener("click", () => {
+    history.length = 0; renderHistory(); toast("History cleared");
+  });
+  $("downloadHist").addEventListener("click", () => {
+    if (!history.length) return toast("Nothing to download yet");
+    const txt = history.map((h) =>
+      `[${h.when}]\nIN:  ${h.input}\nOUT: ${h.plain}\n`).join("\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([txt], { type: "text/plain" }));
+    a.download = "lingo-bridge-history.txt";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  /* ---------------- glossary ---------------- */
+  const ORIGIN_FILTERS = [
+    ["all", "All"], ["aave", "AAVE"], ["hip-hop", "Hip-hop"],
+    ["ballroom", "Ballroom"], ["uk", "UK"], ["internet", "Internet"],
+    ["new york", "NY"], ["bay", "Bay Area"],
+  ];
+  let activeFilter = "all";
+
+  $("filterChips").innerHTML = ORIGIN_FILTERS.map(([key, label]) =>
+    `<button data-f="${key}" class="${key === "all" ? "on" : ""}">${label}</button>`).join("");
+  $("filterChips").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    activeFilter = btn.dataset.f;
+    document.querySelectorAll("#filterChips button").forEach((b) =>
+      b.classList.toggle("on", b === btn));
+    renderGlossary();
+  });
+
+  function matchesFilter(e) {
+    if (activeFilter === "all") return true;
+    const hay = (e.origin + " " + e.tags.join(" ")).toLowerCase();
+    return hay.includes(activeFilter);
+  }
+  function renderGlossary() {
+    const q = $("glossSearch").value.trim().toLowerCase();
+    const entries = DICTIONARY
+      .filter(matchesFilter)
+      .filter((e) => !q ||
+        [e.term, ...e.variants, e.def, e.gloss, e.origin, e.example]
+          .join(" ").toLowerCase().includes(q))
+      .sort((a, b) => a.term.localeCompare(b.term));
+    $("glossCount").textContent = `· ${entries.length} of ${DICTIONARY.length} terms`;
+    $("glossList").innerHTML = entries.length
+      ? entries.map(entryHTML).join("")
+      : '<div class="empty">No terms match — maybe that\'s a contribution waiting to happen.</div>';
+  }
+  $("glossSearch").addEventListener("input", renderGlossary);
+
+  // Word of the day: deterministic by date so everyone sees the same one.
+  const dayIndex = Math.floor(Date.now() / 86400000) % DICTIONARY.length;
+  $("wotd").innerHTML = entryHTML(DICTIONARY[dayIndex]);
+
+  renderGlossary();
+
+  /* ---------------- shared-link intake ---------------- */
+  const q = new URLSearchParams(location.search).get("q");
+  if (q) { $("input").value = q; translate(); }
+})();
+</script>
+</body>
+</html>
