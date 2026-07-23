@@ -1,0 +1,3 @@
+# Databroker-Reporting-Tool has ZERO third-party dependencies.
+# Pure Python 3.9+ standard library. Nothing to pip install.
+# (Clipboard copy uses tkinter if present; the tool works without it.)

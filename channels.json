@@ -1,0 +1,161 @@
+{
+  "_comment": "Reporting channels for data broker complaints. Community-maintained: if a URL has moved, run `python3 report_tool.py report-dead-url <channel_id>` to open a prefilled GitHub issue. Entries are best-effort as of early 2026.",
+  "channels": [
+    {
+      "id": "ftc",
+      "name": "Federal Trade Commission (FTC)",
+      "kind": "federal",
+      "url": "https://reportfraud.ftc.gov/",
+      "jurisdiction": "United States",
+      "good_for": ["deceptive practices", "ignored opt-outs", "dark patterns", "unwanted data sale"],
+      "notes": "The FTC doesn't resolve individual complaints but uses them to build enforcement cases; volume matters. Reference 'data broker' explicitly in the narrative."
+    },
+    {
+      "id": "cfpb",
+      "name": "Consumer Financial Protection Bureau (CFPB)",
+      "kind": "federal",
+      "url": "https://www.consumerfinance.gov/complaint/",
+      "jurisdiction": "United States",
+      "good_for": ["background-check brokers", "tenant screening", "credit-adjacent data", "FCRA disputes"],
+      "notes": "Use when a broker's data feeds background checks, tenant screening, or credit decisions — that can bring the Fair Credit Reporting Act into play. CFPB complaints get individual responses from companies."
+    },
+    {
+      "id": "cppa",
+      "name": "California Privacy Protection Agency (CPPA)",
+      "kind": "state-privacy-regulator",
+      "url": "https://cppa.ca.gov/webapplications/complaint",
+      "jurisdiction": "California residents (brokers doing business in CA)",
+      "good_for": ["CCPA/CPRA violations", "ignored deletion requests", "Delete Act non-compliance", "unregistered brokers"],
+      "notes": "California's dedicated privacy regulator. Also administers the Delete Act data broker registry and the DROP one-stop deletion platform."
+    },
+    {
+      "id": "ca_registry",
+      "name": "California Data Broker Registry (Delete Act)",
+      "kind": "registry",
+      "url": "https://cppa.ca.gov/data_broker_registry/",
+      "jurisdiction": "California",
+      "good_for": ["checking if a broker is registered", "reporting unregistered brokers"],
+      "notes": "Brokers operating on Californians must register annually. Operating unregistered carries daily fines — reporting an unregistered broker is a high-leverage complaint."
+    },
+    {
+      "id": "vt_registry",
+      "name": "Vermont Data Broker Registry (Secretary of State)",
+      "kind": "registry",
+      "url": "https://sos.vermont.gov/data-brokers/",
+      "jurisdiction": "Vermont",
+      "good_for": ["checking registration", "reporting unregistered brokers"],
+      "notes": "The first US data broker registry (2018). Registration filings are public and useful evidence — they include the broker's own description of its opt-out process."
+    },
+    {
+      "id": "tx_registry",
+      "name": "Texas Data Broker Registry (Secretary of State)",
+      "kind": "registry",
+      "url": "https://www.sos.state.tx.us/statdoc/data-brokers.shtml",
+      "jurisdiction": "Texas",
+      "good_for": ["checking registration", "reporting unregistered brokers"],
+      "notes": "Texas SB 2105 (2023) requires registration; the Texas AG has been notably active on data-privacy enforcement."
+    },
+    {
+      "id": "or_registry",
+      "name": "Oregon Data Broker Registry (DCBS)",
+      "kind": "registry",
+      "url": "https://dfr.oregon.gov/business/reg/Pages/data-brokers.aspx",
+      "jurisdiction": "Oregon",
+      "good_for": ["checking registration", "reporting unregistered brokers"],
+      "notes": "Oregon HB 2052 (2023) registry."
+    },
+    {
+      "id": "ag_ca", "name": "California Attorney General", "kind": "state-ag",
+      "url": "https://oag.ca.gov/contact/consumer-complaint-against-business-or-company",
+      "jurisdiction": "California", "good_for": ["CCPA violations", "deceptive practices"],
+      "notes": "Shares CCPA enforcement with the CPPA."
+    },
+    {
+      "id": "ag_ny", "name": "New York Attorney General", "kind": "state-ag",
+      "url": "https://ag.ny.gov/consumer-frauds/filing-a-consumer-complaint",
+      "jurisdiction": "New York", "good_for": ["deceptive practices", "SHIELD Act issues"],
+      "notes": ""
+    },
+    {
+      "id": "ag_tx", "name": "Texas Attorney General", "kind": "state-ag",
+      "url": "https://www.texasattorneygeneral.gov/consumer-protection/file-consumer-complaint",
+      "jurisdiction": "Texas", "good_for": ["TDPSA violations", "unregistered brokers"],
+      "notes": "Active data-privacy enforcement division."
+    },
+    {
+      "id": "ag_fl", "name": "Florida Attorney General", "kind": "state-ag",
+      "url": "https://www.myfloridalegal.com/consumer-protection",
+      "jurisdiction": "Florida", "good_for": ["FDBR violations", "deceptive practices"], "notes": ""
+    },
+    {
+      "id": "ag_wa", "name": "Washington Attorney General", "kind": "state-ag",
+      "url": "https://www.atg.wa.gov/file-complaint",
+      "jurisdiction": "Washington", "good_for": ["My Health My Data Act issues", "deceptive practices"], "notes": ""
+    },
+    {
+      "id": "ag_il", "name": "Illinois Attorney General", "kind": "state-ag",
+      "url": "https://www.illinoisattorneygeneral.gov/File-A-Complaint/",
+      "jurisdiction": "Illinois", "good_for": ["BIPA (biometric) issues", "deceptive practices"], "notes": ""
+    },
+    {
+      "id": "ag_ma", "name": "Massachusetts Attorney General", "kind": "state-ag",
+      "url": "https://www.mass.gov/how-to/file-a-consumer-complaint",
+      "jurisdiction": "Massachusetts", "good_for": ["deceptive practices"], "notes": ""
+    },
+    {
+      "id": "ag_co", "name": "Colorado Attorney General", "kind": "state-ag",
+      "url": "https://coag.gov/file-complaint/",
+      "jurisdiction": "Colorado", "good_for": ["CPA violations", "ignored opt-outs"],
+      "notes": "Colorado Privacy Act includes a universal opt-out mechanism requirement."
+    },
+    {
+      "id": "ag_ct", "name": "Connecticut Attorney General", "kind": "state-ag",
+      "url": "https://portal.ct.gov/ag/common/complaint-form-landing-page",
+      "jurisdiction": "Connecticut", "good_for": ["CTDPA violations"], "notes": ""
+    },
+    {
+      "id": "ag_va", "name": "Virginia Attorney General", "kind": "state-ag",
+      "url": "https://www.oag.state.va.us/consumer-protection/index.php/file-a-complaint",
+      "jurisdiction": "Virginia", "good_for": ["VCDPA violations"], "notes": ""
+    },
+    {
+      "id": "ag_or", "name": "Oregon Attorney General", "kind": "state-ag",
+      "url": "https://www.doj.state.or.us/consumer-protection/",
+      "jurisdiction": "Oregon", "good_for": ["OCPA violations", "unregistered brokers"], "notes": ""
+    },
+    {
+      "id": "ag_vt", "name": "Vermont Attorney General", "kind": "state-ag",
+      "url": "https://ago.vermont.gov/cap",
+      "jurisdiction": "Vermont", "good_for": ["unregistered brokers", "deceptive practices"], "notes": ""
+    },
+    {
+      "id": "ag_other", "name": "Your state's Attorney General (all states)", "kind": "state-ag",
+      "url": "https://www.naag.org/find-my-ag/",
+      "jurisdiction": "All US states", "good_for": ["any consumer complaint"],
+      "notes": "Directory of every state AG. Nearly all have an online consumer complaint form."
+    },
+    {
+      "id": "ico_uk", "name": "Information Commissioner's Office (ICO)", "kind": "dpa",
+      "url": "https://ico.org.uk/make-a-complaint/",
+      "jurisdiction": "United Kingdom", "good_for": ["UK GDPR violations", "ignored erasure requests"],
+      "notes": "Complain after the broker has had one month to respond to your request."
+    },
+    {
+      "id": "dpc_ie", "name": "Data Protection Commission (Ireland)", "kind": "dpa",
+      "url": "https://www.dataprotection.ie/en/individuals/raising-concern-us",
+      "jurisdiction": "Ireland / EU (many brokers' EU base)", "good_for": ["GDPR Art. 17 violations"],
+      "notes": "Lead authority for many US tech companies' EU operations."
+    },
+    {
+      "id": "cnil_fr", "name": "CNIL (France)", "kind": "dpa",
+      "url": "https://www.cnil.fr/en/plaintes",
+      "jurisdiction": "France / EU", "good_for": ["GDPR violations"], "notes": ""
+    },
+    {
+      "id": "edpb_directory", "name": "EU Data Protection Authorities directory", "kind": "dpa",
+      "url": "https://www.edpb.europa.eu/about-edpb/about-edpb/members_en",
+      "jurisdiction": "European Union", "good_for": ["finding your national DPA"],
+      "notes": "Every EU member state's authority, for Art. 77 complaints."
+    }
+  ]
+}

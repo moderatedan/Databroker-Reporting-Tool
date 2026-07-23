@@ -1,57 +1,48 @@
-# Deploying Lingo Bridge
+# Publishing Databroker-Reporting-Tool
 
-Static site — two files (`index.html`, `dictionary.js`), any static host works.
+A local CLI — "deployment" means publishing the repo well.
 
-## GitHub Pages (recommended)
+## Push to GitHub
 
 ```bash
 git init
 git add .
-git commit -m "v2: 147-term credited dictionary, annotated translator, speech, sharing, history"
+git commit -m "v2: 24 channels, statutory deadline tracking, legal templates, DataBrokerOptOut integration"
 git branch -M main
-git remote add origin https://github.com/moderatedan/hood-lingo-translator.git
+git remote add origin https://github.com/moderatedan/Databroker-Reporting-Tool.git
 git push -u origin main
 ```
 
-Then **Settings → Pages → Deploy from a branch → main / (root)**.
-Live at `https://moderatedan.github.io/hood-lingo-translator/` in about a
-minute. Pages serves HTTPS, which the mic (Web Speech API) and clipboard
-require.
-
-## Netlify / Cloudflare Pages
-
-Drag-and-drop at https://app.netlify.com/drop, or:
+Check nothing personal is staged:
 
 ```bash
-wrangler pages deploy . --project-name lingo-bridge
+git status --ignored | grep data/   # data/ must be ignored
 ```
 
-## Fully offline build (optional)
+## Critical: set the GitHub repo constant
 
-Download the three Google Fonts (Archivo Black, Source Serif 4, Inter) as
-woff2, drop them in `fonts/`, and swap the `<link>` tags for local
-`@font-face` rules. Everything else already runs offline. Voice input still
-needs Chrome/Edge — it's a browser capability, not a network one.
+`report-dead-url` opens prefilled issues against the repo named in
+`report_tool.py` → `GITHUB_REPO = "moderatedan/Databroker-Reporting-Tool"`.
+Update it or the community feature points at nothing.
 
-## Repo settings that help this project find its people
+## Recommended repo settings
 
-- **Topics:** `slang`, `aave`, `dictionary`, `translator`, `linguistics`,
-  `web-speech-api`, `glossary`
-- **About:** "Living slang glossary & translator — origins credited on every
-  entry. Community-editable."
-- Enable **Issues** with a "new term / correction" template asking for:
-  term, meaning, example sentence, where it's from, and how the contributor
-  knows it.
-- Pin the **house rules** (README → Contributing) in the PR template so
-  review expectations are visible before anyone writes an entry.
+- **Topics:** `privacy`, `data-brokers`, `ccpa`, `gdpr`, `ftc`,
+  `consumer-rights`, `python`
+- **About:** "Escalation toolkit for ignored data broker opt-outs: deadline
+  tracking, regulator-ready complaints, 24 channels. Zero dependencies."
+- Enable **Issues**; add a `dead-url.md` issue template with fields:
+  channel id, old URL, what happens, working URL, date checked — matching
+  what `report-dead-url` prefills.
+- Link the companion repo (DataBrokerOptOut) in the README and vice versa —
+  the pairing is the story.
 
-## Post-deploy checklist
+## Post-publish checklist
 
-- [ ] Replace `moderatedan` in index.html (footer) and README.md;
-      `Daniel Brummitt` in LICENSE
-- [ ] Test the mic button on the deployed HTTPS URL (it won't work on
-      plain http)
-- [ ] Test a share link end-to-end: Share → open the `?q=` URL in a
-      private window → auto-translation fires
-- [ ] Screenshots for `docs/` (translate view, an entry card, the glossary)
+- [ ] Replace `moderatedan` (README.md + GITHUB_REPO constant),
+      `Daniel Brummitt` (LICENSE)
+- [ ] Spot-check the channel URLs you personally can verify — regulator
+      forms move, and accuracy is the product
+- [ ] Run the workflow once end-to-end against a real tracked request
+- [ ] Screenshots for `docs/` (deadlines table, a draft, status dashboard)
 - [ ] Tag it: `git tag v2.0.0 && git push --tags`

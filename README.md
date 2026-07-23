@@ -1,86 +1,108 @@
-# 🗣️ Lingo Bridge (hood-lingo-translator)
+# 📣 Databroker-Reporting-Tool
 
-> A living glossary and translator for American and UK street slang — origins credited on every entry, community-editable by design.
+> Opting out asks nicely. This tool handles what happens when they ignore you: statutory deadline tracking, regulator-ready complaint drafts, state registry checks, and an evidence log — across 24 reporting channels.
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Terms](https://img.shields.io/badge/dictionary-147%20terms-blue.svg)
-![Dependencies](https://img.shields.io/badge/runtime%20deps-zero-brightgreen.svg)
-![Made with](https://img.shields.io/badge/made%20with-vanilla%20JS-f7df1e.svg)
+![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)
+![Dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen.svg)
+![Channels](https://img.shields.io/badge/reporting%20channels-24-orange.svg)
 
-Paste (or speak) a sentence full of slang and Lingo Bridge highlights every term it knows, renders a plain-English version, and puts the full dictionary entry — meaning, part of speech, example, and **origin** — one tap away. Or skip the translator and browse the glossary like the reference work it is.
+Data brokers are legally required to honor deletion and opt-out requests — the CCPA/CPRA gives them 45 days, the GDPR one month, and a growing list of state laws (Virginia, Colorado, Connecticut, Texas...) set their own clocks. Most people never track the clock, so brokers face no consequence for ignoring requests. This tool makes the clock — and the escalation — automatic.
 
-**The stance:** most of this vocabulary originates in African-American Vernacular English and in specific scenes and cities — hip-hop, ballroom culture, London's Multicultural English, Jamaican Patois. This project documents and credits that language; it doesn't costume it. That's written into the app, the dictionary's house rules, and the contribution policy below.
+**Design honesty:** the tool never files anything for you (regulator forms require your identity and attestation) and never scrapes broker sites. It drafts the narrative, copies it to your clipboard, opens the right form, tracks the deadlines, and keeps the record. Templates cite real statutes but are consumer-complaint letters, **not legal advice** — for actual disputes, talk to a lawyer or your state AG's office.
 
 ---
 
 ## ✨ Features
 
-- **147-term community dictionary** — `dictionary.js` is a single, readable file of structured entries: term, variants, part of speech, short gloss, full definition, usage example, origin credit, and tags. Regional coverage includes AAVE staples, NY/Bay/Philly/Atlanta regionalisms, UK roadman vocabulary, and internet-era coinage. Growing it is a one-line pull request.
-- **Two-layer translation** — an *annotated* view (original text with tappable highlights that open full dictionary entries) and a *plain English* rendering (glosses substituted in place, capitalization and punctuation preserved). Multi-word phrases like "no cap" and "understood the assignment" match before their parts.
-- **Speech, both directions** — 🎙 voice input via the Web Speech API (Chrome/Edge; graceful fallback elsewhere), and 🔊 read-aloud for translations and for any dictionary entry (term + definition + example).
-- **Sharing** — native share sheet where supported, shareable `?q=` links that auto-translate on open, and one-tap copy.
-- **History** — session history of translations with tap-to-rerun, downloadable as a `.txt`. Deliberately not persisted: nothing is stored after the tab closes.
-- **Glossary browser** — instant search across terms, meanings, and origins; filter chips (AAVE / Hip-hop / Ballroom / UK / Internet / NY / Bay Area); a deterministic word-of-the-day everyone sees.
-- **Modern UI** — editorial dictionary-entry cards, dark/light mode following your OS with a manual toggle, keyboard-accessible highlights, reduced-motion respected, single HTML file.
+- **24 reporting channels** (`channels.json`) — FTC, CFPB (for background-check/FCRA-adjacent brokers), the California Privacy Protection Agency, 13 state Attorneys General plus a directory covering all 50, the four US data broker **registries** (California Delete Act, Vermont, Texas, Oregon), and EU/UK **data protection authorities** (ICO, Irish DPC, CNIL, EDPB directory) for GDPR Article 77 complaints. Each channel lists what it's good for.
+- **Legal templates, auto-filled** — five statute-citing drafts: a final-notice letter to the broker (CCPA § 1798.105/130), FTC/CFPB complaint narratives, state AG narratives, CPPA complaints (including Delete Act non-registration), and GDPR Art. 77 complaints to a DPA. Seven violation types from `ignored_optout` to `dark_patterns` to `unregistered`.
+- **Statutory deadline tracking** — `track spokeo 2026-05-01 --law ccpa` computes the legal response deadline; `deadlines` shows exactly who is overdue by how many days and what to file next. Supported clocks: CCPA/CPRA, GDPR, VCDPA, CPA, CTDPA, TDPSA.
+- **DataBrokerOptOut integration** — `scan-optouts path/to/progress.json` imports every in-flight request from the companion [DataBrokerOptOut](https://github.com/moderatedan/DataBrokerOptOut) project and puts it on a legal clock automatically. Opt out with one tool; escalate with the other.
+- **Auto-discovery** — generates site-scoped searches for your name across any broker list (point it at DataBrokerOptOut's 40-broker `brokers.json`), saves a Markdown checklist, and optionally opens every search in your browser. No scraping.
+- **Complaint log & evidence trail** — every filed complaint recorded with channel, broker, case number, and violation; dashboard and CSV export for the paper trail regulators love.
+- **Community features** — `channels.json` is community-maintained; `report-dead-url <channel>` opens a prefilled GitHub issue the moment a regulator moves a form, and the issue template captures exactly what maintainers need. Regulator URLs rot — the community keeps this accurate.
+- **Zero dependencies, local-only** — pure standard library; all data in `./data/` (gitignored); the script itself makes no network requests.
 
 ## 📸 Screenshots
 
 > _Add your screenshots here:_
 
-| Translate (annotated) | Entry card | Glossary browser |
+| Deadlines view | Draft output | Status dashboard |
 |---|---|---|
-| ![Translate](docs/screenshot-translate.png) | ![Entry](docs/screenshot-entry.png) | ![Glossary](docs/screenshot-glossary.png) |
+| ![Deadlines](docs/screenshot-deadlines.png) | ![Draft](docs/screenshot-draft.png) | ![Status](docs/screenshot-status.png) |
 
-## 🚀 Getting started
+## 🚀 Installation
 
 ```bash
-git clone https://github.com/moderatedan/hood-lingo-translator.git
-cd hood-lingo-translator
-python3 -m http.server 8080     # or just open index.html
-# → http://localhost:8080
+git clone https://github.com/moderatedan/Databroker-Reporting-Tool.git
+cd Databroker-Reporting-Tool
+python3 report_tool.py    # zero dependencies — prints help
 ```
 
-**Dependencies:** none at runtime — vanilla HTML/CSS/JS. The only external requests are Google Fonts (Archivo Black, Source Serif 4, Inter), which degrade gracefully to system fonts offline; vendor them locally if you want a fully offline build. Voice input requires a browser with the Web Speech API (Chrome/Edge); everything else works everywhere.
+Requires Python 3.9+.
 
 ## 📖 Usage
 
-1. **Translate** — paste or 🎙 speak a sentence, hit Translate (or Ctrl/Cmd+Enter). Tap any highlighted term for its full entry; use 🔊 to hear the plain-English version.
-2. **Glossary** — search or filter by origin; every entry card has its own read-aloud button.
-3. **Share** — the Share button produces a link like `index.html?q=no+cap+that+slaps` that auto-translates when opened.
-4. **History** — revisit, rerun, or download this session's translations.
+### The escalation workflow
 
-### An honest note on accuracy
+```bash
+# 1. One-time setup (stored locally only)
+python3 report_tool.py profile
 
-Word-level gloss substitution is transparent and auditable, but it isn't grammar-aware: "the mandem are linking" becomes "the the guys are meet up," and ordinary words that double as slang ("bet," "safe," "peak") can be flagged in plain sentences. The annotated view — highlights plus full entries — is the primary product; the plain rendering is a fast gloss, and the UI says so. Smarter sense disambiguation is on the roadmap.
+# 2. Put your requests on the legal clock
+python3 report_tool.py track spokeo 2026-05-01 --law ccpa
+#    ...or import everything from DataBrokerOptOut in one shot:
+python3 report_tool.py scan-optouts ../DataBrokerOptOut/data/progress.json
 
-## 🤝 Contributing — house rules
+# 3. Watch the clock
+python3 report_tool.py deadlines
+#    Spokeo    2026-05-01   ccpa   2026-06-15   OVERDUE by 38d — file a complaint!
 
-The dictionary is the project. To add or fix a term, edit `dictionary.js` and open a PR. Four rules, enforced in review:
+# 4. Fire the warning shot (often enough by itself)
+python3 report_tool.py draft broker_final_notice spokeo
 
-1. **Define, don't mock.** Write the definition the way a good dictionary would.
-2. **Credit origins.** Every entry names where the term comes from — AAVE, a city, a scene, a subculture. "Origin: internet" is a last resort, not a default.
-3. **No slurs**, and no terms whose primary use is demeaning a group.
-4. **Keep glosses short** — they get substituted into sentences, so the first alternative before any `/` should read naturally in place.
+# 5. Escalate to regulators — draft is copied, form opens in browser
+python3 report_tool.py file ftc spokeo
+python3 report_tool.py file ag_ca spokeo
+python3 report_tool.py file cppa spokeo --violation sold_after_optout
 
-Entry shape:
-
-```js
-{ term: "no cap", variants: ["nocap"], pos: "phrase",
-  gloss: "no lie",
-  def: "Truthfully; without exaggeration. 'Cap' means a lie...",
-  example: "That was the best meal I've had all year, no cap.",
-  origin: "AAVE / Atlanta hip-hop", tags: ["truth"] }
+# 6. Keep the record
+python3 report_tool.py log ftc spokeo --case FTC-2026-12345
+python3 report_tool.py status
+python3 report_tool.py export complaints.csv
 ```
 
-Slang moves fast and meanings drift by region — corrections from people who actually use these terms are the most valuable PRs this repo can get.
+### Other commands
 
-## 🗺️ Roadmap
+```bash
+python3 report_tool.py channels                    # all 24 channels
+python3 report_tool.py channels --kind registry    # just the registries
+python3 report_tool.py discover --brokers ../DataBrokerOptOut/brokers.json --open
+python3 report_tool.py draft cppa radaris --violation unregistered
+python3 report_tool.py report-dead-url ftc         # community URL fix
+```
 
-- [ ] Word-sense disambiguation for double-duty words (bet/safe/peak/mad)
-- [ ] Per-entry "heard it in" citations (songs, shows) with links
-- [ ] More regions: Toronto, Houston, Chicago, Miami/Spanglish
-- [ ] Quiz mode built from the glossary
+## ⚖️ Which channel, when?
+
+| Situation | Channel(s) |
+|---|---|
+| Broker ignored a request past the deadline | `broker_final_notice`, then `ftc` + your state AG |
+| You're a California resident | add `cppa` — the dedicated privacy regulator |
+| Broker feeds background/tenant checks | `cfpb` (FCRA angle — companies must respond individually) |
+| Broker isn't in a state registry | `ca_registry` / `vt_registry` / `tx_registry` / `or_registry` + that state's AG, `--violation unregistered` |
+| You're in the EU/UK | your DPA (`ico_uk`, `dpc_ie`, `cnil_fr`, or the `edpb_directory`) — Art. 77 |
+
+One well-documented complaint rarely moves a regulator; a pattern of them does. That's why the log, the CSV export, and filing with **multiple** channels matter.
+
+## 🤝 Contributing
+
+The highest-value PRs maintain `channels.json`: regulator forms move constantly, and new state privacy laws (and registries) arrive every year. The `report-dead-url` command turns "I hit a 404" into a prefilled issue in one step. Adding a new state's AG, a new registry, or a new statutory clock to `LAWS` are all one-entry PRs.
+
+## ⚠️ Not legal advice
+
+This tool generates consumer complaints — something every consumer can file themselves — and cites statutes for accuracy. It is not a law firm and nothing here is legal advice. Statutory windows can be extended with notice (both CCPA and GDPR allow it), exemptions exist, and laws change. For disputes with real stakes, consult a lawyer or your state Attorney General's consumer division.
 
 ## 📄 License
 
-[MIT](LICENSE). The language itself belongs to the communities that made it.
+[MIT](LICENSE)
